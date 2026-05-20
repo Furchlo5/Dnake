@@ -86,27 +86,23 @@ public class Snake {
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
         } else if (richtungseingabe.equals("w") && y == 0) {
-            SnakeLocation slW = new SnakeLocation(x, Map.HEIGHT);
+            SnakeLocation slW = new SnakeLocation(x, Map.HEIGHT - 1);
             snakelocation.add(0, slW);
 
             // yılanin elma yeme ihtimaline karsi kuyruk hafizada tutuluyor.
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
-        }
-
-        if (richtungseingabe.equals("a") && x > 0) {
+        } else if (richtungseingabe.equals("a") && x > 0) {
             SnakeLocation slA = new SnakeLocation(x - 1, y);
             snakelocation.add(0, slA);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
         } else if (richtungseingabe.equals("a") && x == 0) {
-            SnakeLocation slA = new SnakeLocation(Map.WIDTH, y);
+            SnakeLocation slA = new SnakeLocation(Map.WIDTH - 1, y);
             snakelocation.add(0, slA);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
-        }
-
-        if (richtungseingabe.equals("s") && y < Map.HEIGHT - 1) {
+        } else if (richtungseingabe.equals("s") && y < Map.HEIGHT - 1) {
             SnakeLocation slS = new SnakeLocation(x, y + 1);
             snakelocation.add(0, slS);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
@@ -116,9 +112,7 @@ public class Snake {
             snakelocation.add(0, slS);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
-        }
-
-        if (richtungseingabe.equals("d") && x < Map.WIDTH - 1) {
+        } else if (richtungseingabe.equals("d") && x < Map.WIDTH - 1) {
             SnakeLocation slD = new SnakeLocation(x + 1, y);
             snakelocation.add(0, slD);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
@@ -128,14 +122,11 @@ public class Snake {
             snakelocation.add(0, slD);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
-        }
-
-        if (richtungseingabe.equals("q")) {
+        } else if (richtungseingabe.equals("q")) {
             System.out.println("Oyun sona erdirildi...");
             System.exit(0);
-        } else if (richtungseingabe.equals("w") && y == 0) {
+        } else {
 
         }
-
     }
 }

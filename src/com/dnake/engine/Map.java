@@ -1,8 +1,8 @@
 package com.dnake.engine;
 
+import com.dnake.entities.*;
 import java.util.Random;
 import java.util.Scanner;
-import com.dnake.entities.*;
 
 public class Map {
 
@@ -79,7 +79,7 @@ public class Map {
         while (true) {
             System.out.print("\033[H\033[2J");
             System.out.flush();
-
+            System.out.println("\n");
             drawMap();
             System.out.print("\nMove (w/a/s/d/q): ");
             richtungseingabe = sc.nextLine();
