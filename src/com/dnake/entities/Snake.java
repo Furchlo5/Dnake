@@ -79,47 +79,49 @@ public class Snake {
         y = snakelocation.get(0).getY();
 
         if (richtungseingabe.equals("w") && y > 0) {
-            SnakeLocation slW = new SnakeLocation(x, y - 1);
-            snakelocation.add(0, slW);
+            SnakeLocation slw = new SnakeLocation(x, y - 1);
+
+            // yılan kendini yerse game over
+            isCollidingWithBody(slw);
 
             // yılanin elma yeme ihtimaline karsi kuyruk hafizada tutuluyor.
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
         } else if (richtungseingabe.equals("w") && y == 0) {
-            SnakeLocation slW = new SnakeLocation(x, Map.HEIGHT - 1);
-            snakelocation.add(0, slW);
+            SnakeLocation slw = new SnakeLocation(x, Map.HEIGHT - 1);
+            isCollidingWithBody(slw);
 
             // yılanin elma yeme ihtimaline karsi kuyruk hafizada tutuluyor.
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
         } else if (richtungseingabe.equals("a") && x > 0) {
-            SnakeLocation slA = new SnakeLocation(x - 1, y);
-            snakelocation.add(0, slA);
+            SnakeLocation slw = new SnakeLocation(x - 1, y);
+            isCollidingWithBody(slw);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
         } else if (richtungseingabe.equals("a") && x == 0) {
-            SnakeLocation slA = new SnakeLocation(Map.WIDTH - 1, y);
-            snakelocation.add(0, slA);
+            SnakeLocation slw = new SnakeLocation(Map.WIDTH - 1, y);
+            isCollidingWithBody(slw);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
         } else if (richtungseingabe.equals("s") && y < Map.HEIGHT - 1) {
-            SnakeLocation slS = new SnakeLocation(x, y + 1);
-            snakelocation.add(0, slS);
+            SnakeLocation slw = new SnakeLocation(x, y + 1);
+            isCollidingWithBody(slw);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
         } else if (richtungseingabe.equals("s") && y == Map.HEIGHT - 1) {
-            SnakeLocation slS = new SnakeLocation(x, 0);
-            snakelocation.add(0, slS);
+            SnakeLocation slw = new SnakeLocation(x, 0);
+            isCollidingWithBody(slw);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
         } else if (richtungseingabe.equals("d") && x < Map.WIDTH - 1) {
-            SnakeLocation slD = new SnakeLocation(x + 1, y);
-            snakelocation.add(0, slD);
+            SnakeLocation slw = new SnakeLocation(x + 1, y);
+            isCollidingWithBody(slw);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
         } else if (richtungseingabe.equals("d") && x == Map.WIDTH - 1) {
-            SnakeLocation slD = new SnakeLocation(0, y);
-            snakelocation.add(0, slD);
+            SnakeLocation slw = new SnakeLocation(0, y);
+            isCollidingWithBody(slw);
             last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
             snakelocation.remove(snakelocation.size() - 1);
         } else if (richtungseingabe.equals("q")) {
@@ -127,6 +129,16 @@ public class Snake {
             System.exit(0);
         } else {
 
+        }
+    }
+
+    public void isCollidingWithBody(SnakeLocation slw) {
+        String is_eat_itself = checkSnakeAt(slw.getX(), slw.getY());
+        if (is_eat_itself == null) {
+            snakelocation.add(0, slw);
+        } else {
+            System.out.println("GAME OVER");
+            System.exit(0);
         }
     }
 }
