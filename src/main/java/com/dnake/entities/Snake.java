@@ -78,6 +78,9 @@ public class Snake {
         x = snakelocation.get(0).getX();
         y = snakelocation.get(0).getY();
 
+
+        // TODO: Burada çok fazla kod tekrarı var. azaltmayı düşün.
+        
         if (richtungseingabe.equals("w") && y > 0) {
             SnakeLocation slw = new SnakeLocation(x, y - 1);
 

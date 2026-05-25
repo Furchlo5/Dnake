@@ -10,7 +10,7 @@ public class Food extends GameObject implements IConsumable {
 
     @Override
     public String getGameObjectType() {
-        return "@";
+        return "0";
     }
 
     @Override
