@@ -8,7 +8,7 @@ public class Snake {
 
     // private int snakeLength;
     private ArrayList<SnakeLocation> snakelocation = new ArrayList();
-    private SnakeLocation last_removed_SnakeLocation;
+    private SnakeLocation last_removed_SnakeLocation = null;
 
     // oyununu kenarlara yakın başlaması mantıksız olduğu için yılan orta kısımda olusur
     public Snake() {
@@ -139,6 +139,12 @@ public class Snake {
         } else {
             System.out.println("GAME OVER");
             System.exit(0);
+        }
+    }
+
+    public void grow() {
+        if (last_removed_SnakeLocation != null) {
+            snakelocation.add(last_removed_SnakeLocation);
         }
     }
 }

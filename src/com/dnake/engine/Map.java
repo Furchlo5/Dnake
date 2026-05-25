@@ -94,8 +94,11 @@ public class Map {
     }
 
     public boolean eatFood() {
-        if (snake.getSnakeLocation().get(0).getX() == food.getX() && snake.getSnakeLocation().get(0).getY() == food.getY()) {
-            snake.getSnakeLocation().add(snake.getLastRemovedSnaleLocation());
+        int snakeHead_x = snake.getSnakeLocation().get(0).getX();
+        int snakeHead_y = snake.getSnakeLocation().get(0).getY();
+
+        if (snakeHead_x == food.getX() && snakeHead_y == food.getY()) {
+            food.consume(snake);
             return true;
         }
         return false;
