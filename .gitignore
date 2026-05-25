@@ -1,5 +1,5 @@
 bin/
-.DS_Store/
+.DS_Store
 .vscode/
 compile.txt
 development-suggestions.txt
