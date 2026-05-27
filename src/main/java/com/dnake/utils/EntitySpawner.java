@@ -29,7 +29,7 @@ public class EntitySpawner<T>{
                 yılanın boyu uzadıkça yemi boş alanda oluşturma olasılığı çok düşecek
                 bu yüzden sonsuz döngüye girme ihtimali artacak
                 
-                çözüm: map sınıfında boş koordinatları bir ArrayList içerisinde tutarak
+                ai'ın çözümü: map sınıfında boş koordinatları bir ArrayList içerisinde tutarak
                 food'umuzu o boş alandan seçtirebiliriz. böylece yılanın boyu ne kadar
                 uzarsa uzasın boş bir alanı %100 bulacak bir algoritmamız olur. 
              */
