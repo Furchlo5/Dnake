@@ -1,6 +1,7 @@
 package com.dnake.engine;
 
 import com.dnake.entities.*;
+import com.dnake.interfaces.IConsumable;
 import com.dnake.interfaces.Spawnable;
 import com.dnake.utils.EntitySpawner;
 import java.util.Scanner;
@@ -10,6 +11,7 @@ public class Map {
 
     public static final int HEIGHT = 16;   // tüm sınıfların görebileceği bir sabit olması için static eklendi
     public static final int WIDTH = 32;    // böylece Map. ile erişebileceğiz
+    private int score = 0;
     private Snake snake;
     private Food food;
     private Poison poison;
@@ -17,6 +19,7 @@ public class Map {
     private EntitySpawner<Poison> poisonSpawner = new EntitySpawner<>();
 
     public Map() {
+
         this.snake = new Snake();          // snake hafızada var edildi
 
         // ai tarafından yazıldı.
@@ -26,6 +29,9 @@ public class Map {
                 return new Food(x, y);
             }
         });    // yem oyun başında 1 kere oluşturuldu
+
+        // food örnek alınarak oyun başında %20 olasılıkla poison oluşturuluyor.
+        isPoisonRisiko();
     }
 
     // created Snake - food - map
@@ -38,14 +44,17 @@ public class Map {
                 // snake
                 if (PartOfSnake != null) {
                     System.out.print(PartOfSnake);
-                } else if (this.food != null && x == food.getX() && y == food.getY()){
-                    // food
+                } 
+                // food
+                else if (this.food != null && x == food.getX() && y == food.getY()){
                     System.out.print(food.getGameObjectType());
-                } else if (this.poison != null && x == poison.getX() && y == poison.getY()) {
-                    // poison
+                } 
+                // poison
+                else if (this.poison != null && x == poison.getX() && y == poison.getY()) {
                     System.out.print(poison.getGameObjectType());
-                } else {
-                    // map
+                } 
+                // map
+                else {
                     if (x % 2 == 0) {
                         System.out.print(".");
                     } else {
@@ -55,6 +64,7 @@ public class Map {
             }
             System.out.println("");
         }
+        System.out.println("\nScore: " + this.score);
     }
 
     // infinite loop to move the snake
@@ -76,10 +86,13 @@ public class Map {
             snake.moveSnake(richtungseingabe);
 
             // zehirli yemek kontrolu
-            eatPoison();
+            eatObject(poison);
 
             // if there is food, eat it.
-            if (eatFood()) {
+            if (eatObject(food)) {
+
+                this.score += 10;
+
                 // ai çözümü
                 food = foodSpawner.createRandomObject(snake, new Spawnable<Food>() {
                     @Override
@@ -89,41 +102,61 @@ public class Map {
                 });
                 // System.out.print(food.getGameObjectType());
 
+                // elma yedigimiz icin map'e %10 ihtimalle poison firlat
                 isPoisonRisiko();
             }
         }
     }
 
-    public boolean eatFood() {
+    // public boolean eatFood() {
+    //     int snakeHead_x = snake.getSnakeLocation().get(0).getX();
+    //     int snakeHead_y = snake.getSnakeLocation().get(0).getY();
+
+    //     if (snakeHead_x == food.getX() && snakeHead_y == food.getY()) {
+    //         food.consume(snake);
+    //         return true;
+    //     }
+    //     return false;
+    // }
+
+    // // TODO: kod tekrarı
+    // public boolean eatPoison(){
+    //     if (this.poison == null) return false;
+
+    //     int snakeHead_x = snake.getSnakeLocation().get(0).getX();
+    //     int snakeHead_y = snake.getSnakeLocation().get(0).getY();
+
+    //     if (snakeHead_x == poison.getX() && snakeHead_y == poison.getY()) {
+    //         poison.consume(snake);
+    //         return true;
+    //     }
+    //     return false;
+    // }
+
+    // kod tekrarı ai yardımıyle çözüldü -> generic class
+    public <T extends GameObject & IConsumable> boolean eatObject(T item){
+        if (item == null) return false;
+
         int snakeHead_x = snake.getSnakeLocation().get(0).getX();
         int snakeHead_y = snake.getSnakeLocation().get(0).getY();
 
-        if (snakeHead_x == food.getX() && snakeHead_y == food.getY()) {
-            food.consume(snake);
+        if (snakeHead_x == item.getX() && snakeHead_y == item.getY()) {
+            item.consume(snake);
             return true;
         }
         return false;
     }
 
-    // TODO: kod tekrarı
-    public boolean eatPoison(){
-        if (this.poison == null) return false;
-
-        int snakeHead_x = snake.getSnakeLocation().get(0).getX();
-        int snakeHead_y = snake.getSnakeLocation().get(0).getY();
-
-        if (snakeHead_x == poison.getX() && snakeHead_y == poison.getY()) {
-            poison.consume(snake);
-            return true;
-        }
-        return false;
-    }
+    
 
     public void isPoisonRisiko() {
+        // her food yenildiginde önceki poison'i temizle
+        this.poison = null;
+
         Random random_number = new Random();
-        int poisonRisk = random_number.nextInt(10); // 0 ile 9 arası sayı üretir (%10 ihtimal)
+        int poisonRisk = random_number.nextInt(5); // 0 ile 4 arası sayı üretir (%20 ihtimal)
         
-        if (poisonRisk == 0) {
+        if (poisonRisk == 1) {
             this.poison = poisonSpawner.createRandomObject(snake, new Spawnable<Poison>() {
                 @Override
                 public Poison spawn(int x, int y){

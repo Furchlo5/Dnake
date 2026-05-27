@@ -11,16 +11,18 @@ public class EntitySpawner<T>{
     // create a food in a random location
         public T createRandomObject(Snake snake, Spawnable<T> factory) {    
             Random random_object = new Random();
-            int object_x;
-            int object_y;
+            int object_random_x;
+            int object_random_y;
     
             do {
-                object_x = random_object.nextInt(Map.WIDTH);
-                object_y = random_object.nextInt(Map.HEIGHT);
-            } while (snake.checkSnakeAt(object_x, object_y) != null);
+                object_random_x = random_object.nextInt(Map.WIDTH);
+                object_random_y = random_object.nextInt(Map.HEIGHT);
+            } while (snake.checkSnakeAt(object_random_x, object_random_y) != null);
+
+            // TODO: food ve poison aynı değerleri alabiliyor -> fix it 
     
             // ai çözümü
-            T obj = factory.spawn(object_x, object_y);
+            T obj = factory.spawn(object_random_x, object_random_y);
             return obj;
     
             /*  TODO

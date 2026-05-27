@@ -6,7 +6,6 @@ import java.util.Random;
 
 public class Snake {
 
-    // private int snakeLength;
     private ArrayList<SnakeLocation> snakelocation = new ArrayList();
     private SnakeLocation last_removed_SnakeLocation = null;
 
