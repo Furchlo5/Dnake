@@ -76,6 +76,7 @@ public class Snake {
 
         x = snakelocation.get(0).getX();
         y = snakelocation.get(0).getY();
+        
 
 
         // TODO: Burada çok fazla kod tekrarı var. azaltmayı düşün.
@@ -130,7 +131,7 @@ public class Snake {
             System.out.println("Oyun sona erdirildi...");
             System.exit(0);
         } else {
-
+            // ignore
         }
     }
 
@@ -148,5 +149,10 @@ public class Snake {
         if (last_removed_SnakeLocation != null) {
             snakelocation.add(last_removed_SnakeLocation);
         }
+    }
+
+    // Snake.java içine geçici olarak ekle:
+    public void clearBodyForTesting() {
+        this.snakelocation.clear(); // Listeyi sıfırla, poşeti tamamen boşalt!
     }
 }

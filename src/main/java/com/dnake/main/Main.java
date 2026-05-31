@@ -1,3 +1,5 @@
+// TODO: yeni bir package keyword'u kullanıldığında path doğru olmasına rağmen IDE kırmızı yakıyor.
+
 package com.dnake.main;
 
 import com.dnake.engine.Map;

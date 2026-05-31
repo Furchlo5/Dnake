@@ -13,7 +13,8 @@ public class EntitySpawner<T>{
             Random random_object = new Random();
             int object_random_x;
             int object_random_y;
-    
+            
+            // TODO: harita tamamen dolarsa sonsuz döngüye girer
             do {
                 object_random_x = random_object.nextInt(Map.WIDTH);
                 object_random_y = random_object.nextInt(Map.HEIGHT);

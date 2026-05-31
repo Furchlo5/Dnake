@@ -19,16 +19,11 @@ public class Map {
     private EntitySpawner<Poison> poisonSpawner = new EntitySpawner<>();
 
     public Map() {
+        // snake hafızada var edildi
+        this.snake = new Snake();          
 
-        this.snake = new Snake();          // snake hafızada var edildi
-
-        // ai tarafından yazıldı.
-        this.food = foodSpawner.createRandomObject(snake, new Spawnable<Food>() {
-            @Override
-            public Food spawn(int x, int y){
-                return new Food(x, y);
-            }
-        });    // yem oyun başında 1 kere oluşturuldu
+        // yem oyun başında 1 kere oluşturuldu  
+        createRandomFood();
 
         // food örnek alınarak oyun başında %20 olasılıkla poison oluşturuluyor.
         isPoisonRisiko();
@@ -68,7 +63,7 @@ public class Map {
     }
 
     // infinite loop to move the snake
-    public void startGame() {
+    public void startGame(){
 
         /*
             TODO: yılan gittiği yönün tersine giderse kendi kendini yiyor. Biz bunu ignorelamasını istiyoruz.
@@ -80,7 +75,9 @@ public class Map {
             System.out.print("\033[H\033[2J");
             System.out.flush();
             System.out.println("\n");
+
             drawMap();
+    
             System.out.print("\nMove (w/a/s/d/q): ");
             richtungseingabe = sc.nextLine();
             snake.moveSnake(richtungseingabe);
@@ -90,19 +87,10 @@ public class Map {
 
             // if there is food, eat it.
             if (eatObject(food)) {
-
                 this.score += 10;
+                createRandomFood();
 
-                // ai çözümü
-                food = foodSpawner.createRandomObject(snake, new Spawnable<Food>() {
-                    @Override
-                    public Food spawn(int x, int y){
-                        return new Food(x, y);
-                    }
-                });
-                // System.out.print(food.getGameObjectType());
-
-                // elma yedigimiz icin map'e %10 ihtimalle poison firlat
+                // elma yedigimiz icin map'e %20 ihtimalle poison firlat
                 isPoisonRisiko();
             }
         }
@@ -165,7 +153,16 @@ public class Map {
             });
         }
     }
-        
+
+    public void createRandomFood(){
+        // ai yazdı
+        this.food = foodSpawner.createRandomObject(snake, new Spawnable<Food>() {
+            @Override
+            public Food spawn(int x, int y){
+                return new Food(x, y);
+            }
+        });
+    }   
 }
 
 
