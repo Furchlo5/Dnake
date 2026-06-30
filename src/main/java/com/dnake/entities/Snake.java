@@ -6,25 +6,30 @@ import java.util.Random;
 
 public class Snake {
 
+    private final int SNAKE_MAX_WIDTH_POSITION = 12;
+    private final int SNAKE_MIN_WIDTH_POSITION = 6;
+    private final int SNAKE_MAX_HEIGHT_POSITION = 6;
+    private final int SNAKE_MIN_HEIGHT_POSITION = 3;
+
     private ArrayList<SnakeLocation> snakelocation = new ArrayList();
     private SnakeLocation last_removed_SnakeLocation = null;
 
     // oyununu kenarlara yakın başlaması mantıksız olduğu için yılan orta kısımda olusur
     public Snake() {
-        // snakeLength = 3;
         Random createRandom = new Random();
 
         // mapin ortalarında random x ve y değerleri 
-        int x = createRandom.nextInt(Map.WIDTH - 12) + 6;
-        int y = createRandom.nextInt(Map.HEIGHT - 12) + 6;
+        int randon_x = createRandom.nextInt(Map.WIDTH - SNAKE_MAX_WIDTH_POSITION) + SNAKE_MIN_WIDTH_POSITION;
+        int random_y = createRandom.nextInt(Map.HEIGHT - SNAKE_MAX_HEIGHT_POSITION) + SNAKE_MIN_HEIGHT_POSITION;
 
-        SnakeLocation sl1 = new SnakeLocation(x, y);
+        // create a snake position to initialize the snake
+        SnakeLocation sl1 = new SnakeLocation(randon_x, random_y);
         snakelocation.add(sl1);  // 0. index yani kafa
 
-        SnakeLocation sl2 = new SnakeLocation(x + 1, y);
+        SnakeLocation sl2 = new SnakeLocation(randon_x + 1, random_y);
         snakelocation.add(sl2);
 
-        SnakeLocation sl3 = new SnakeLocation(x + 2, y);
+        SnakeLocation sl3 = new SnakeLocation(randon_x + 2, random_y);
         snakelocation.add(sl3);
 
     }
@@ -43,11 +48,11 @@ public class Snake {
         indexof() index numarasını bulmak için arka planda tekrardan döngüyü çalıştırır ve
         bu performans açısından yorucudur.
      */
-    public String checkSnakeAt(int mapX, int mapY) {
+    public String checkSnakeAt(int x, int y) {
         for (int i = 0; i < snakelocation.size(); i++) {
             SnakeLocation snkloc = snakelocation.get(i);
 
-            if (mapX == snkloc.getX() && mapY == snkloc.getY()) {
+            if (x == snkloc.getX() && y == snkloc.getY()) {
                 if (i == 0) {
                     // 0. index -> baş
                     return "x";
@@ -64,75 +69,67 @@ public class Snake {
 
     public void moveSnake(String richtungseingabe) {
         /*
-            w -> yukari
-            a -> sol
-            s -> asagi
-            d -> sag
+            w -> up arrow
+            a -> left arrow
+            s -> down arrow
+            d -> right arrow
             q -> exit
          */
 
-        int x;
-        int y;
+        int snake_x;
+        int snake_y;
 
-        x = snakelocation.get(0).getX();
-        y = snakelocation.get(0).getY();
+        snake_x = snakelocation.get(0).getX();
+        snake_y = snakelocation.get(0).getY();
         
 
+        if (richtungseingabe.equals("w") && snake_y > 0) {
+            SnakeLocation slw = new SnakeLocation(snake_x, snake_y - 1);
 
-        // TODO: Burada çok fazla kod tekrarı var. azaltmayı düşün.
-        
-        if (richtungseingabe.equals("w") && y > 0) {
-            SnakeLocation slw = new SnakeLocation(x, y - 1);
-
-            // yılan kendini yerse game over
+            // yılan kendini yerse game over, yemezse de yeni konumu ekle
             isCollidingWithBody(slw);
 
-            // yılanin elma yeme ihtimaline karsi kuyruk hafizada tutuluyor.
-            last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
-            snakelocation.remove(snakelocation.size() - 1);
-        } else if (richtungseingabe.equals("w") && y == 0) {
-            SnakeLocation slw = new SnakeLocation(x, Map.HEIGHT - 1);
+            // yılanin elma yeme ihtimaline karsi kuyruk hafizada tutularak siliniyor
+            popTailPositon();
+        } else if (richtungseingabe.equals("w") && snake_y == 0) {
+            SnakeLocation slw = new SnakeLocation(snake_x, Map.HEIGHT - 1);
             isCollidingWithBody(slw);
-
-            // yılanin elma yeme ihtimaline karsi kuyruk hafizada tutuluyor.
-            last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
-            snakelocation.remove(snakelocation.size() - 1);
-        } else if (richtungseingabe.equals("a") && x > 0) {
-            SnakeLocation slw = new SnakeLocation(x - 1, y);
+            popTailPositon();
+        } else if (richtungseingabe.equals("a") && snake_x > 0) {
+            SnakeLocation slw = new SnakeLocation(snake_x - 1, snake_y);
             isCollidingWithBody(slw);
-            last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
-            snakelocation.remove(snakelocation.size() - 1);
-        } else if (richtungseingabe.equals("a") && x == 0) {
-            SnakeLocation slw = new SnakeLocation(Map.WIDTH - 1, y);
+            popTailPositon();
+        } else if (richtungseingabe.equals("a") && snake_x == 0) {
+            SnakeLocation slw = new SnakeLocation(Map.WIDTH - 1, snake_y);
             isCollidingWithBody(slw);
-            last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
-            snakelocation.remove(snakelocation.size() - 1);
-        } else if (richtungseingabe.equals("s") && y < Map.HEIGHT - 1) {
-            SnakeLocation slw = new SnakeLocation(x, y + 1);
+            popTailPositon();
+        } else if (richtungseingabe.equals("s") && snake_y < Map.HEIGHT - 1) {
+            SnakeLocation slw = new SnakeLocation(snake_x, snake_y + 1);
             isCollidingWithBody(slw);
-            last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
-            snakelocation.remove(snakelocation.size() - 1);
-        } else if (richtungseingabe.equals("s") && y == Map.HEIGHT - 1) {
-            SnakeLocation slw = new SnakeLocation(x, 0);
+            popTailPositon();
+        } else if (richtungseingabe.equals("s") && snake_y == Map.HEIGHT - 1) {
+            SnakeLocation slw = new SnakeLocation(snake_x, 0);
             isCollidingWithBody(slw);
-            last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
-            snakelocation.remove(snakelocation.size() - 1);
-        } else if (richtungseingabe.equals("d") && x < Map.WIDTH - 1) {
-            SnakeLocation slw = new SnakeLocation(x + 1, y);
+            popTailPositon();
+        } else if (richtungseingabe.equals("d") && snake_x < Map.WIDTH - 1) {
+            SnakeLocation slw = new SnakeLocation(snake_x + 1, snake_y);
             isCollidingWithBody(slw);
-            last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
-            snakelocation.remove(snakelocation.size() - 1);
-        } else if (richtungseingabe.equals("d") && x == Map.WIDTH - 1) {
-            SnakeLocation slw = new SnakeLocation(0, y);
+            popTailPositon();
+        } else if (richtungseingabe.equals("d") && snake_x == Map.WIDTH - 1) {
+            SnakeLocation slw = new SnakeLocation(0, snake_y);
             isCollidingWithBody(slw);
-            last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
-            snakelocation.remove(snakelocation.size() - 1);
+            popTailPositon();
         } else if (richtungseingabe.equals("q")) {
             System.out.println("Oyun sona erdirildi...");
             System.exit(0);
         } else {
             // ignore
         }
+    }
+
+    public void popTailPositon(){
+        last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
+        snakelocation.remove(snakelocation.size() - 1);
     }
 
     public void isCollidingWithBody(SnakeLocation slw) {
@@ -149,10 +146,5 @@ public class Snake {
         if (last_removed_SnakeLocation != null) {
             snakelocation.add(last_removed_SnakeLocation);
         }
-    }
-
-    // Snake.java içine geçici olarak ekle:
-    public void clearBodyForTesting() {
-        this.snakelocation.clear(); // Listeyi sıfırla, poşeti tamamen boşalt!
     }
 }

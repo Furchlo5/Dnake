@@ -67,7 +67,8 @@ public class Map {
 
         /*
             TODO: yılan gittiği yönün tersine giderse kendi kendini yiyor. Biz bunu ignorelamasını istiyoruz.
-         */
+            çözüm: yılan kendini mi yiyor kontrolünü yaparken eğer yediği parça yılanın 1. indexi ise bunu ignorlayabiliriz çünkü yılan 1. indexteki parçayı min 3 hamlede yiyebilir. 1 hamlede yediği durumu ignorlamış oluruz böylece. 
+        */
         Scanner sc = new Scanner(System.in);
         String richtungseingabe;
 

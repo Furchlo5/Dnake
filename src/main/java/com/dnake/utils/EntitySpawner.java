@@ -15,6 +15,7 @@ public class EntitySpawner<T>{
             int object_random_y;
             
             // TODO: harita tamamen dolarsa sonsuz döngüye girer
+            // creat a position that doesn't belong to the snake
             do {
                 object_random_x = random_object.nextInt(Map.WIDTH);
                 object_random_y = random_object.nextInt(Map.HEIGHT);
