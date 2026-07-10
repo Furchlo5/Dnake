@@ -1,7 +1,5 @@
 bin/
 .DS_Store
 .vscode/
-compile.txt
-development-suggestions.txt
-paths.txt
-snake-project-roadmap.md
+z-others/
+resources/
