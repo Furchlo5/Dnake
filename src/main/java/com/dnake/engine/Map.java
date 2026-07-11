@@ -18,6 +18,10 @@ public class Map {
     private EntitySpawner<Food> foodSpawner = new EntitySpawner<>();
     private EntitySpawner<Poison> poisonSpawner = new EntitySpawner<>();
 
+    // Oyunun duraklatılıp duraklatılmadığını tutar.
+    // Farklı thread'ler anlık görebilsin diye volatile yapıyoruz.
+    private volatile boolean isPaused = false;
+
     public Map() {
         // snake hafızada var edildi
         this.snake = new Snake();          
@@ -62,64 +66,63 @@ public class Map {
         System.out.println("\nScore: " + this.score);
     }
 
-    // infinite loop to move the snake
-    public void startGame(){
+    public void startGame() {
+        // Klavye girdilerini asenkron (bağımsız) toplamak için yeni bir Thread açıyoruz
+        Thread inputThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Scanner sc = new Scanner(System.in);
+                while (true) {
+                    String input = sc.nextLine();
 
-        /*
-            TODO: yılan gittiği yönün tersine giderse kendi kendini yiyor. Biz bunu ignorelamasını istiyoruz.
-        */
-        Scanner sc = new Scanner(System.in);
-        String richtungseingabe;
+                    // 1. Durum: Eğer oyuncu 'p' tuşuna bastıysa oyunu pause et/çıkar
+                    if (input.equalsIgnoreCase("p")) {
+                        togglePause();
+                    } 
+                    // 2. Durum: Eğer oyun pause edilmemişse, gelen harfe göre yılanın yönünü değiştir
+                    else if (!isPaused()) {
+                        if (input.equals("w")) snake.setCurrentDirection(Direction.UP);
+                        else if (input.equals("s")) snake.setCurrentDirection(Direction.DOWN);
+                        else if (input.equals("a")) snake.setCurrentDirection(Direction.LEFT);
+                        else if (input.equals("d")) snake.setCurrentDirection(Direction.RIGHT);
+                    }
+                }
+            }
+        });
 
+        // Bu thread'i arka planda çalışması için tetikliyoruz!
+        inputThread.start();
+
+        // Giriş thread'ini başlattıktan sonra ana thread bu döngüye girer ve durmadan akar
         while (true) {
+            // Ekranı temizleme ve haritayı çizme kodları
             System.out.print("\033[H\033[2J");
             System.out.flush();
             System.out.println("\n");
-
             drawMap();
-    
-            System.out.print("\nMove (w/a/s/d/q): ");
-            richtungseingabe = sc.nextLine();
-            snake.moveSnake(richtungseingabe);
 
-            // zehirli yemek kontrolu
-            eatObject(poison);
+            if (!isPaused()) {
+                // Yılan artık dışarıdan parametre almadan kendi içindeki yöne göre otomatik ilerliyor!
+                snake.moveSnake(); 
 
-            // if there is food, eat it.
-            if (eatObject(food)) {
-                this.score += 10;
-                createRandomFood();
+                // Çarpışma ve yeme kontrolleri
+                eatObject(poison);
+                if (eatObject(food)) {
+                    this.score += 10;
+                    createRandomFood();
+                    isPoisonRisiko();
+                }
+            }
 
-                // elma yedigimiz icin map'e %20 ihtimalle poison firlat
-                isPoisonRisiko();
+            // OYUNUN HIZI (Zaman Sayacı): Yılanın saniyede kaç kare gideceğini belirler.
+            // Thread'i 200 milisaniye uyutarak döngüyü yavaşlatıyoruz, yoksa yılan ışık hızında gider!
+            try {
+                Thread.sleep(200); 
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
-
-    // public boolean eatFood() {
-    //     int snakeHead_x = snake.getSnakeLocation().get(0).getX();
-    //     int snakeHead_y = snake.getSnakeLocation().get(0).getY();
-
-    //     if (snakeHead_x == food.getX() && snakeHead_y == food.getY()) {
-    //         food.consume(snake);
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
-    // // TODO: kod tekrarı
-    // public boolean eatPoison(){
-    //     if (this.poison == null) return false;
-
-    //     int snakeHead_x = snake.getSnakeLocation().get(0).getX();
-    //     int snakeHead_y = snake.getSnakeLocation().get(0).getY();
-
-    //     if (snakeHead_x == poison.getX() && snakeHead_y == poison.getY()) {
-    //         poison.consume(snake);
-    //         return true;
-    //     }
-    //     return false;
-    // }
 
     // kod tekrarı ai yardımıyle çözüldü -> generic class
     public <T extends GameObject & IConsumable> boolean eatObject(T item){
@@ -153,6 +156,7 @@ public class Map {
             });
         }
     }
+    
 
     public void createRandomFood(){
         // ai yazdı
@@ -162,7 +166,22 @@ public class Map {
                 return new Food(x, y);
             }
         });
-    }   
+    }
+    
+    public boolean isPaused() {
+    return isPaused;
+}
+
+    public void togglePause() {
+        this.isPaused = !this.isPaused;
+        if (this.isPaused) {
+            System.out.println("--- OYUN DURAKLATILDI (Devam etmek için tekrar 'P' basın) ---");
+        } else {
+            System.out.println("--- OYUN DEVAM EDİYOR ---");
+        }
+    }
+
+    
 }
 
 

@@ -11,6 +11,10 @@ public class Snake {
     private final int SNAKE_MAX_HEIGHT_POSITION = 6;
     private final int SNAKE_MIN_HEIGHT_POSITION = 3;
 
+    // Yılanın anlık yönünü tutan değişken. 
+    // volatile yapıyoruz çünkü ileride farklı thread'ler bu veriyi okuyup yazacak!
+    private volatile Direction currentDirection = Direction.LEFT;  
+
     private ArrayList<SnakeLocation> snakelocation = new ArrayList();
     private SnakeLocation last_removed_SnakeLocation = null;
 
@@ -67,14 +71,7 @@ public class Snake {
         return null;
     }
 
-    public void moveSnake(String richtungseingabe) {
-        /*
-            w -> up arrow
-            a -> left arrow
-            s -> down arrow
-            d -> right arrow
-            q -> exit
-         */
+    public void moveSnake() {
 
         int snake_x;
         int snake_y;
@@ -83,7 +80,7 @@ public class Snake {
         snake_y = snakelocation.get(0).getY();
         
 
-        if (richtungseingabe.equals("w") && snake_y > 0) {
+        if (currentDirection == Direction.UP && snake_y > 0) {
             SnakeLocation slw = new SnakeLocation(snake_x, snake_y - 1);
 
             // yılan kendini yerse game over, yemezse de yeni konumu ekle
@@ -91,37 +88,34 @@ public class Snake {
 
             // yılanin elma yeme ihtimaline karsi kuyruk hafizada tutularak siliniyor
             popTailPositon();
-        } else if (richtungseingabe.equals("w") && snake_y == 0) {
+        } else if (currentDirection == Direction.UP && snake_y == 0) {
             SnakeLocation slw = new SnakeLocation(snake_x, Map.HEIGHT - 1);
             isCollidingWithBody(slw);
             popTailPositon();
-        } else if (richtungseingabe.equals("a") && snake_x > 0) {
+        } else if (currentDirection == Direction.LEFT && snake_x > 0) {
             SnakeLocation slw = new SnakeLocation(snake_x - 1, snake_y);
             isCollidingWithBody(slw);
             popTailPositon();
-        } else if (richtungseingabe.equals("a") && snake_x == 0) {
+        } else if (currentDirection == Direction.LEFT && snake_x == 0) {
             SnakeLocation slw = new SnakeLocation(Map.WIDTH - 1, snake_y);
             isCollidingWithBody(slw);
             popTailPositon();
-        } else if (richtungseingabe.equals("s") && snake_y < Map.HEIGHT - 1) {
+        } else if (currentDirection == Direction.DOWN && snake_y < Map.HEIGHT - 1) {
             SnakeLocation slw = new SnakeLocation(snake_x, snake_y + 1);
             isCollidingWithBody(slw);
             popTailPositon();
-        } else if (richtungseingabe.equals("s") && snake_y == Map.HEIGHT - 1) {
+        } else if (currentDirection == Direction.DOWN && snake_y == Map.HEIGHT - 1) {
             SnakeLocation slw = new SnakeLocation(snake_x, 0);
             isCollidingWithBody(slw);
             popTailPositon();
-        } else if (richtungseingabe.equals("d") && snake_x < Map.WIDTH - 1) {
+        } else if (currentDirection == Direction.RIGHT && snake_x < Map.WIDTH - 1) {
             SnakeLocation slw = new SnakeLocation(snake_x + 1, snake_y);
             isCollidingWithBody(slw);
             popTailPositon();
-        } else if (richtungseingabe.equals("d") && snake_x == Map.WIDTH - 1) {
+        } else if (currentDirection == Direction.RIGHT && snake_x == Map.WIDTH - 1) {
             SnakeLocation slw = new SnakeLocation(0, snake_y);
             isCollidingWithBody(slw);
             popTailPositon();
-        } else if (richtungseingabe.equals("q")) {
-            System.out.println("Oyun sona erdirildi...");
-            System.exit(0);
         } else {
             // ignore
         }
@@ -146,5 +140,14 @@ public class Snake {
         if (last_removed_SnakeLocation != null) {
             snakelocation.add(last_removed_SnakeLocation);
         }
+    }
+
+    public Direction getCurrentDirection() {
+    return currentDirection;
+    }
+
+    public void setCurrentDirection(Direction newDirection) {
+    // TODO: Yılanın kendi içine doğru (tersine) dönmesini engelleme mantığını buraya kurabilirsin!
+    this.currentDirection = newDirection;
     }
 }
