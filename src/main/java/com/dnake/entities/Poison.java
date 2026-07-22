@@ -1,8 +1,8 @@
 package com.dnake.entities;
 
-import com.dnake.interfaces.IConsumable;
+// import com.dnake.interfaces.IConsumable;
 
-public class Poison extends GameObject implements IConsumable {
+public class Poison extends GameObject { //   implements IConsumable
 
     public Poison(int x, int y) {
         super(x, y);
@@ -13,9 +13,9 @@ public class Poison extends GameObject implements IConsumable {
         return "?";
     }
 
-    @Override
-    public void consume(Snake snake) {
-        System.out.println("GAME OVER");
-        System.exit(0);
-    }
+    // @Override
+    // public void consume(Snake snake) {
+    //     System.out.println("GAME OVER");
+    //     System.exit(0);
+    // }
 }

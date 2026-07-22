@@ -1,11 +1,14 @@
 package com.dnake.gui;
 
 import com.dnake.engine.GameState;
-import com.dnake.threads.InputQueue; // Kuyruğumuzu import ediyoruz
+import com.dnake.entities.*; 
+import com.dnake.threads.InputQueue;        // Kuyruğumuzu import ediyoruz
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.*;
+import java.util.ArrayList;
+import javax.swing.JPanel;
+
 
 public class GamePanel extends JPanel{
     private final int cellSize = 32;
@@ -60,8 +63,16 @@ public class GamePanel extends JPanel{
             g.drawImage(images.appleRed, foodX, foodY, cellSize, cellSize, null);
         }
 
+        // poison çiz (varsa)
+        if (state.getPoison() != null){
+            int poisonX = state.getPoison().getX() * cellSize;
+            int poisonY = state.getPoison().getY() * cellSize;
+            g.drawImage(images.applePoison, poisonX, poisonY, cellSize, cellSize, null);
+
+        }
+
         // 3. Yılanı çiz
-        java.util.ArrayList<com.dnake.entities.SnakeLocation> body = state.getSnake().getSnakeLocation();
+        ArrayList<SnakeLocation> body = state.getSnake().getSnakeLocation();
         for (int i = 0; i < body.size(); i++) {
             int partX = body.get(i).getX() * cellSize;
             int partY = body.get(i).getY() * cellSize;
@@ -73,6 +84,6 @@ public class GamePanel extends JPanel{
                 // Diğerleri yılanın gövdesidir
                 g.drawImage(images.snakeBody, partX, partY, cellSize, cellSize, null);
             }
-        }
+         }
     }
 }

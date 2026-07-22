@@ -1,8 +1,8 @@
 package com.dnake.entities;
 
-import com.dnake.interfaces.IConsumable;
+// import com.dnake.interfaces.IConsumable;
 
-public class Food extends GameObject implements IConsumable {
+public class Food extends GameObject { //  implements IConsumable
     
     public Food(int x, int y) {
         super(x, y);
@@ -13,8 +13,8 @@ public class Food extends GameObject implements IConsumable {
         return "0";
     }
 
-    @Override
-    public void consume(Snake snake) {
-        snake.grow();
-    }
+    // @Override
+    // public void consume(Snake snake) {
+    //     snake.grow();
+    // }
 }
