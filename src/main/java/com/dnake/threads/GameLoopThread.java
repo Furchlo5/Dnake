@@ -25,7 +25,7 @@ public class GameLoopThread extends Thread {
             if (input != null) {
                 // Şimdilik sistemin çalıştığını görmek için terminale yazdıralım. 
                 // Bir sonraki adımda bunu GameState içindeki yılanın yönüne bağlayacağız!
-                System.out.println("Kuyruktan cekilen tus: " + input);
+                System.out.println("Key Listener: " + input);
                 
                 // Eğer oyuncu P'ye bastıysa, durumu değiştirme mantığı buraya gelecek
             }

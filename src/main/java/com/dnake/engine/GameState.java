@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 import com.dnake.entities.*;
-import com.dnake.interfaces.Spawnable;
+import com.dnake.interfaces.*;
 import com.dnake.utils.EntitySpawner;
 
 public class GameState {
@@ -14,7 +14,7 @@ public class GameState {
     private Snake snake;
     private Food food;
     private Poison poison;
-    private boolean isGameOver = false;
+    private volatile boolean isGameOver = false;
     private EntitySpawner<Food> foodSpawner = new EntitySpawner<>();
     private EntitySpawner<Poison> poisonSpawner = new EntitySpawner<>();
     Random random_number = new Random();
@@ -60,65 +60,15 @@ public class GameState {
         // Yılanı o anki yönünde bir adım yürüt
         snake.moveSnake();
 
-        // TODO: Çarpışma ve elma yeme mantığını (eatObject) buraya taşıyacağız
-    }
+        eatObject(poison);
 
-    public void startGame() {
-        // Klavye girdilerini asenkron (bağımsız) toplamak için yeni bir Thread açıyoruz
-        Thread inputThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Scanner sc = new Scanner(System.in);
-                while (true) {
-                    String input = sc.nextLine();
+        if (eatObject(food)) {
+            createRandomFood();
 
-                    // 1. Durum: Eğer oyuncu 'p' tuşuna bastıysa oyunu pause et/çıkar
-                    if (input.equalsIgnoreCase("p")) {
-                        togglePause();
-                    } 
-                    // 2. Durum: Eğer oyun pause edilmemişse, gelen harfe göre yılanın yönünü değiştir
-                    else if (!getIsPaused()) {
-                        if (input.equals("w")) snake.setCurrentDirection(Direction.UP);
-                        else if (input.equals("s")) snake.setCurrentDirection(Direction.DOWN);
-                        else if (input.equals("a")) snake.setCurrentDirection(Direction.LEFT);
-                        else if (input.equals("d")) snake.setCurrentDirection(Direction.RIGHT);
-                    }
-                }
-            }
-        });
-
-        // Bu thread'i arka planda çalışması için tetikliyoruz!
-        inputThread.start();
-
-        // Giriş thread'ini başlattıktan sonra ana thread bu döngüye girer ve durmadan akar
-        while (true) {
-            // Ekranı temizleme ve haritayı çizme kodları
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
-            // System.out.println("\n");
-            // drawMap();
-
-            if (!getIsPaused()) {
-                // Yılan artık dışarıdan parametre almadan kendi içindeki yöne göre otomatik ilerliyor!
-                snake.moveSnake(); 
-
-                // // Çarpışma ve yeme kontrolleri
-                // eatObject(poison);
-                // if (eatObject(food)) {
-                //     this.score += 10;
-                //     createRandomFood();
-                //     isPoisonRisiko();
-                // }
-            }
-
-            // OYUNUN HIZI (Zaman Sayacı): Yılanın saniyede kaç kare gideceğini belirler.
-            // Thread'i 200 milisaniye uyutarak döngüyü yavaşlatıyoruz, yoksa yılan ışık hızında gider!
-            try {
-                Thread.sleep(200); 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            // elma yedigimiz icin map'e %20 ihtimalle poison firlat
+            isPoisonRisiko();
         }
+        
     }
 
     public void togglePause() {
@@ -138,7 +88,7 @@ public class GameState {
                 return new Food(x, y);
             }
         });
-    } 
+    }
     
     public void isPoisonRisiko() {
     // her food yenildiginde önceki poison'i temizle
@@ -154,5 +104,18 @@ public class GameState {
             });
         }
     }
+
+    public <T extends GameObject & IConsumable> boolean eatObject(T item){
+            if (item == null) return false;
+    
+            int snakeHead_x = snake.getSnakeLocation().get(0).getX();
+            int snakeHead_y = snake.getSnakeLocation().get(0).getY();
+    
+            if (snakeHead_x == item.getX() && snakeHead_y == item.getY()) {
+                item.consume(snake);
+                return true;
+            }
+            return false;
+        }
 }
 

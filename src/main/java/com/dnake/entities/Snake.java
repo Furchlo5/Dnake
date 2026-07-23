@@ -47,31 +47,6 @@ public class Snake {
         return snakelocation;
     }
 
-    /* 
-        burada normalde for-each kullanacaktım ama
-        bize bulduğumuz elemanın index numarası lazım.
-        indexof() index numarasını bulmak için arka planda tekrardan döngüyü çalıştırır ve
-        bu performans açısından yorucudur.
-     */
-    public String checkSnakeAt(int x, int y) {
-        for (int i = 0; i < snakelocation.size(); i++) {
-            SnakeLocation snkloc = snakelocation.get(i);
-
-            if (x == snkloc.getX() && y == snkloc.getY()) {
-                if (i == 0) {
-                    // 0. index -> baş
-                    return "x";
-                } else {
-                    // diğer indexler -> kuyruk
-                    return "o";
-                }
-            }
-        }
-
-        // döngüden çıktı ve hiçbir eşleşme yok -> yılana ait koordinat değil
-        return null;
-    }
-
     public void moveSnake() {
 
         int snake_x;
@@ -80,7 +55,6 @@ public class Snake {
         snake_x = snakelocation.get(0).getX();
         snake_y = snakelocation.get(0).getY();
         
-
         if (currentDirection == Direction.UP && snake_y > 0) {
             SnakeLocation slw = new SnakeLocation(snake_x, snake_y - 1);
 
@@ -88,61 +62,81 @@ public class Snake {
             isCollidingWithBody(slw);
 
             // yılanin elma yeme ihtimaline karsi kuyruk hafizada tutularak siliniyor
-            popTailPositon();
+            popTailPosition();
         } else if (currentDirection == Direction.UP && snake_y == 0) {
             SnakeLocation slw = new SnakeLocation(snake_x, GameState.HEIGHT - 1);
             isCollidingWithBody(slw);
-            popTailPositon();
+            popTailPosition();
         } else if (currentDirection == Direction.LEFT && snake_x > 0) {
             SnakeLocation slw = new SnakeLocation(snake_x - 1, snake_y);
             isCollidingWithBody(slw);
-            popTailPositon();
+            popTailPosition();
         } else if (currentDirection == Direction.LEFT && snake_x == 0) {
             SnakeLocation slw = new SnakeLocation(GameState.WIDTH - 1, snake_y);
             isCollidingWithBody(slw);
-            popTailPositon();
+            popTailPosition();
         } else if (currentDirection == Direction.DOWN && snake_y < GameState.HEIGHT - 1) {
             SnakeLocation slw = new SnakeLocation(snake_x, snake_y + 1);
             isCollidingWithBody(slw);
-            popTailPositon();
+            popTailPosition();
         } else if (currentDirection == Direction.DOWN && snake_y == GameState.HEIGHT - 1) {
             SnakeLocation slw = new SnakeLocation(snake_x, 0);
             isCollidingWithBody(slw);
-            popTailPositon();
+            popTailPosition();
         } else if (currentDirection == Direction.RIGHT && snake_x < GameState.WIDTH - 1) {
             SnakeLocation slw = new SnakeLocation(snake_x + 1, snake_y);
             isCollidingWithBody(slw);
-            popTailPositon();
+            popTailPosition();
         } else if (currentDirection == Direction.RIGHT && snake_x == GameState.WIDTH - 1) {
             SnakeLocation slw = new SnakeLocation(0, snake_y);
             isCollidingWithBody(slw);
-            popTailPositon();
+            popTailPosition();
         } else {
             // ignore
         }
     }
 
-    public void popTailPositon(){
+    public void popTailPosition(){
         last_removed_SnakeLocation = snakelocation.get(snakelocation.size() - 1);
         snakelocation.remove(snakelocation.size() - 1);
     }
 
-    public void isCollidingWithBody(SnakeLocation slw) {
-        String is_eat_itself = checkSnakeAt(slw.getX(), slw.getY());
-        if (is_eat_itself == null) {
+    /* 
+        burada normalde for-each kullanacaktım ama
+        bize bulduğumuz elemanın index numarası lazım.
+        indexof() index numarasını bulmak için arka planda tekrardan döngüyü çalıştırır ve
+        bu performans açısından yorucudur.
+     */
+    public boolean  checkSnakeAt(int x, int y) {
+        for (int i = 0; i < snakelocation.size(); i++) {
+            SnakeLocation snkloc = snakelocation.get(i);
+
+            if (x == snkloc.getX() && y == snkloc.getY()) {
+                return true;
+            }
+        }
+
+        //döngüden çıktı ve hiçbir eşleşme yok -> yılana ait koordinat değil
+        return false;
+    }
+
+    public boolean isCollidingWithBody(SnakeLocation slw) {
+        boolean is_eat_itself = checkSnakeAt(slw.getX(), slw.getY());
+        if (!is_eat_itself) {
             snakelocation.add(0, slw);
         } else {
             System.out.println("GAME OVER");
-            System.exit(0);
+            return true;
         }
+        return false;
     }
 
-    // public void grow() {
-    //     if (last_removed_SnakeLocation != null) {
-    //         snakelocation.add(last_removed_SnakeLocation);
-    //     }
-    // }
-
+    public void grow() {
+        if (last_removed_SnakeLocation != null) {
+            snakelocation.add(last_removed_SnakeLocation);
+        } 
+    }
+  
     public Direction getCurrentDirection() {
     return currentDirection;
     }

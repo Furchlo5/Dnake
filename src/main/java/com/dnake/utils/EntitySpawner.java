@@ -19,7 +19,7 @@ public class EntitySpawner<T>{
         do {
             object_random_x = random_object.nextInt(GameState.WIDTH);
             object_random_y = random_object.nextInt(GameState.HEIGHT);
-        } while (snake.checkSnakeAt(object_random_x, object_random_y) != null);
+        } while (snake.checkSnakeAt(object_random_x, object_random_y));
 
         // TODO: food ve poison aynı değerleri alabiliyor -> fix it 
 
