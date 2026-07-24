@@ -8,6 +8,7 @@ public class GameLoopThread extends Thread {
     private final GameState state;
     private final InputQueue inputQueue;
     private final GamePanel panel;
+    public static volatile int speed = 200;
 
     // Constructor: Şef (Main) bu işçiye çalışması için gereken aletleri veriyor
     public GameLoopThread(GameState state, InputQueue inputQueue, GamePanel panel) {
@@ -40,7 +41,8 @@ public class GameLoopThread extends Thread {
             // 4. OYUN HIZI (FPS / Frame Rate Kontrolü)
             try {
                 // Yılanın hızını buradan ayarlıyoruz. 200ms = Saniyede 5 kare (5 FPS)
-                Thread.sleep(200); 
+                Thread.sleep(speed); 
+                System.out.println("Snake speed: " + speed);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 break; // Thread hata alırsa döngüyü kır ve çık

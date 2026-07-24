@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 import com.dnake.entities.*;
 import com.dnake.interfaces.*;
+import com.dnake.threads.GameLoopThread;
 import com.dnake.utils.EntitySpawner;
 
 public class GameState {
@@ -46,25 +47,45 @@ public class GameState {
 
     // Oyun döngüsü (GameLoopThread) her 200ms'de bir bu metodu çağıracak
     public void update(String input) {
+
+        // 1. ÖNCE PAUSE KONTROLÜ (Oyun durdurulmuş olsa bile 'P' tuşunun okunabilmesi gerekir!)
+        if (input != null && input.equalsIgnoreCase("p")) {
+            isPaused = !isPaused;
+            return; // Pause durumunu değiştirdik, bu tur için aşağıdaki hareket kodlarını çalıştırma
+        }
         if (isPaused || isGameOver) return; // Oyun durduysa hiçbir şeyi güncelleme
 
         // Gelen girdiye göre yılanın yönünü güncelle
         if (input != null) {
-            if (input.equals("w")) snake.setCurrentDirection(Direction.UP);
-            else if (input.equals("s")) snake.setCurrentDirection(Direction.DOWN);
-            else if (input.equals("a")) snake.setCurrentDirection(Direction.LEFT);
-            else if (input.equals("d")) snake.setCurrentDirection(Direction.RIGHT);
-            else if (input.equals("p")) isPaused = !isPaused;
+            if (input.equals("w") && snake.getCurrentDirection() != Direction.DOWN) snake.setCurrentDirection(Direction.UP);
+            else if (input.equals("s") && snake.getCurrentDirection() != Direction.UP) snake.setCurrentDirection(Direction.DOWN);
+            else if (input.equals("a") && snake.getCurrentDirection() != Direction.RIGHT) snake.setCurrentDirection(Direction.LEFT);
+            else if (input.equals("d") && snake.getCurrentDirection() != Direction.LEFT) snake.setCurrentDirection(Direction.RIGHT);
         }
 
         // Yılanı o anki yönünde bir adım yürüt
         snake.moveSnake();
 
-        eatObject(poison);
+        if (eatObject(poison)) {
+            isGameOver = true;
+        }
 
         if (eatObject(food)) {
             createRandomFood();
 
+            // yılanın hızlanma mantığı
+            if (GameLoopThread.speed <= 200 && GameLoopThread.speed >= 150) {
+                GameLoopThread.speed -= 10;
+            } else if (GameLoopThread.speed < 150 && GameLoopThread.speed >= 100) {
+                GameLoopThread.speed -= 5;
+            } else if (GameLoopThread.speed < 100 && GameLoopThread.speed >= 50) {
+                GameLoopThread.speed -= 2;
+            } else if (GameLoopThread.speed < 50 && GameLoopThread.speed > 30) {
+                GameLoopThread.speed -= 1;
+            } else if (GameLoopThread.speed <= 30) {
+                // artık hızımız sabit
+            } 
+            
             // elma yedigimiz icin map'e %20 ihtimalle poison firlat
             isPoisonRisiko();
         }
