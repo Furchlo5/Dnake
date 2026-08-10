@@ -10,12 +10,13 @@ import com.dnake.utils.EntitySpawner;
 
 public class GameState {
     
-    public static final int HEIGHT = 32;   // tüm sınıfların görebileceği bir sabit olması için static eklendi
-    public static final int WIDTH = 32;    // böylece Map. ile erişebileceğiz
+    public static final int HEIGHT = 30;   // tüm sınıfların görebileceği bir sabit olması için static eklendi
+    public static final int WIDTH = 30;    // böylece Map. ile erişebileceğiz
     private Snake snake;
     private Food food;
     private Poison poison;
     private volatile boolean isGameOver = false;
+    private int score = 0;
     private EntitySpawner<Food> foodSpawner = new EntitySpawner<>();
     private EntitySpawner<Poison> poisonSpawner = new EntitySpawner<>();
     Random random_number = new Random();
@@ -44,6 +45,9 @@ public class GameState {
     public boolean getIsPaused() { 
         return isPaused; 
     }
+    public int getScore(){
+        return score;
+    }
 
     // Oyun döngüsü (GameLoopThread) her 200ms'de bir bu metodu çağıracak
     public void update(String input) {
@@ -64,9 +68,16 @@ public class GameState {
         }
 
         // Yılanı o anki yönünde bir adım yürüt
-        snake.moveSnake();
+        boolean isCrashed = snake.moveSnake();
+        
+        if (isCrashed){
+            this.isGameOver = true;
+            System.out.println("Game Over");
+            return;
+        }
 
         if (eatObject(poison)) {
+            System.out.println("Game Over");
             isGameOver = true;
         }
 
@@ -90,15 +101,6 @@ public class GameState {
             isPoisonRisiko();
         }
         
-    }
-
-    public void togglePause() {
-        this.isPaused = !this.isPaused;
-        if (this.isPaused) {
-            System.out.println("--- OYUN DURAKLATILDI (Devam etmek için tekrar 'P' basın) ---");
-        } else {
-            System.out.println("--- OYUN DEVAM EDİYOR ---");
-        }
     }
 
     public void createRandomFood(){
@@ -127,16 +129,21 @@ public class GameState {
     }
 
     public <T extends GameObject & IConsumable> boolean eatObject(T item){
-            if (item == null) return false;
-    
-            int snakeHead_x = snake.getSnakeLocation().get(0).getX();
-            int snakeHead_y = snake.getSnakeLocation().get(0).getY();
-    
-            if (snakeHead_x == item.getX() && snakeHead_y == item.getY()) {
-                item.consume(snake);
-                return true;
-            }
-            return false;
+        if (item == null) return false;
+
+        int snakeHead_x = snake.getSnakeLocation().get(0).getX();
+        int snakeHead_y = snake.getSnakeLocation().get(0).getY();
+
+        if (snakeHead_x == item.getX() && snakeHead_y == item.getY()) {
+            item.consume(snake);
+            score++;
+            return true;
         }
+        return false;
+    }
+
+    public boolean isGameOver() {
+        return isGameOver;
+    }
 }
 

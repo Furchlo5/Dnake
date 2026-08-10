@@ -20,7 +20,7 @@ public class GamePanel extends JPanel{
         this.images = images;
         this.state = state;
         this.inputQueue = inputQueue;
-        setPreferredSize(new Dimension(1024, 1024));
+        setPreferredSize(new Dimension(960, 960));
 
         // 1. KRİTİK AYAR: Panelin klavye girdilerini dinleyebilmesi için odaklanabilir yapıyoruz
         setFocusable(true); 
@@ -53,10 +53,10 @@ public class GamePanel extends JPanel{
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
-        g.drawImage(images.mapImage, 0, 0, 1024, 1024, null);
+        g.drawImage(images.mapImage, 0, 0, 960, 960, null);
     
 
-        // 2. Elmayı çiz (Eğer varsa)
+        // Elmayı çiz (Eğer varsa)
         if (state.getFood() != null) {
             int foodX = state.getFood().getX() * cellSize;
             int foodY = state.getFood().getY() * cellSize;
@@ -73,17 +73,32 @@ public class GamePanel extends JPanel{
 
         // 3. Yılanı çiz
         ArrayList<SnakeLocation> body = state.getSnake().getSnakeLocation();
-        for (int i = 0; i < body.size(); i++) {
+
+        // Önce Gövdeyi Çiz (Döngüyü 1'den başlatıyoruz ki kafayı atlasın)
+        for (int i = 1; i < body.size(); i++) {
             int partX = body.get(i).getX() * cellSize;
             int partY = body.get(i).getY() * cellSize;
 
-            if (i == 0) {
-                // 0. index yılanın kafasıdır
-                g.drawImage(images.snakeHead, partX, partY, cellSize, cellSize, null);
-            } else {
-                // Diğerleri yılanın gövdesidir
-                g.drawImage(images.snakeBody, partX, partY, cellSize, cellSize, null);
-            }
-         }
+            g.drawImage(images.snakeBody, partX, partY, cellSize, cellSize, null);
+        }
+
+        // En Son Kafayı Çiz (Böylece kafa daima gövdenin üstünde, yani görünür kalır!)
+        int headX = body.get(0).getX() * cellSize;
+        int headY = body.get(0).getY() * cellSize;
+        g.drawImage(images.snakeHead, headX, headY, cellSize, cellSize, null);
+
+        // draw score on top of the bar
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(Color.BLACK);
+        g2.setFont(new Font("Monospaced", Font.BOLD, 28));
+        String scoreText = "SCORE: " + state.getScore();
+        g2.drawString(scoreText, 20, 42);
+
+        // OYUN BİTTİYSE EKRANIN ORTASINA GAME OVER YAZ!
+        if (state.isGameOver()) {
+            g2.setColor(Color.RED);
+            g2.setFont(new Font("Monospaced", Font.BOLD, 80)); // Kocaman font
+            g2.drawString("GAME OVER", 250, 480); // Şimdilik göz kararı ortaladık
+        }
     }
 }

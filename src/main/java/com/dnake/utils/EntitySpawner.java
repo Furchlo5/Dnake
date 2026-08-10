@@ -17,8 +17,8 @@ public class EntitySpawner<T>{
         // TODO: harita tamamen dolarsa sonsuz döngüye girer
         // creat a position that doesn't belong to the snake
         do {
-            object_random_x = random_object.nextInt(GameState.WIDTH);
-            object_random_y = random_object.nextInt(GameState.HEIGHT);
+            object_random_x = random_object.nextInt(GameState.WIDTH - 2) + 2;
+            object_random_y = random_object.nextInt(GameState.HEIGHT - 2) + 2;
         } while (snake.checkSnakeAt(object_random_x, object_random_y));
 
         // TODO: food ve poison aynı değerleri alabiliyor -> fix it 

@@ -47,53 +47,51 @@ public class Snake {
         return snakelocation;
     }
 
-    public void moveSnake() {
+    public boolean moveSnake() {
 
         int snake_x;
         int snake_y;
 
         snake_x = snakelocation.get(0).getX();
         snake_y = snakelocation.get(0).getY();
+
+        SnakeLocation slw = null; // Yeni kafa pozisyonu
         
-        if (currentDirection == Direction.UP && snake_y > 0) {
-            SnakeLocation slw = new SnakeLocation(snake_x, snake_y - 1);
-
-            // yılan kendini yerse game over, yemezse de yeni konumu ekle
-            isCollidingWithBody(slw);
-
-            // yılanin elma yeme ihtimaline karsi kuyruk hafizada tutularak siliniyor
-            popTailPosition();
-        } else if (currentDirection == Direction.UP && snake_y == 0) {
-            SnakeLocation slw = new SnakeLocation(snake_x, GameState.HEIGHT - 1);
-            isCollidingWithBody(slw);
-            popTailPosition();
+        if (currentDirection == Direction.UP && snake_y > 2) {
+            slw = new SnakeLocation(snake_x, snake_y - 1);
+        } else if (currentDirection == Direction.UP && snake_y == 2) {
+            slw = new SnakeLocation(snake_x, GameState.HEIGHT - 1);
         } else if (currentDirection == Direction.LEFT && snake_x > 0) {
-            SnakeLocation slw = new SnakeLocation(snake_x - 1, snake_y);
-            isCollidingWithBody(slw);
-            popTailPosition();
+            slw = new SnakeLocation(snake_x - 1, snake_y);
         } else if (currentDirection == Direction.LEFT && snake_x == 0) {
-            SnakeLocation slw = new SnakeLocation(GameState.WIDTH - 1, snake_y);
-            isCollidingWithBody(slw);
-            popTailPosition();
+            slw = new SnakeLocation(GameState.WIDTH - 1, snake_y);
         } else if (currentDirection == Direction.DOWN && snake_y < GameState.HEIGHT - 1) {
-            SnakeLocation slw = new SnakeLocation(snake_x, snake_y + 1);
-            isCollidingWithBody(slw);
-            popTailPosition();
+            slw = new SnakeLocation(snake_x, snake_y + 1);
         } else if (currentDirection == Direction.DOWN && snake_y == GameState.HEIGHT - 1) {
-            SnakeLocation slw = new SnakeLocation(snake_x, 0);
-            isCollidingWithBody(slw);
-            popTailPosition();
+            slw = new SnakeLocation(snake_x, 2);
         } else if (currentDirection == Direction.RIGHT && snake_x < GameState.WIDTH - 1) {
-            SnakeLocation slw = new SnakeLocation(snake_x + 1, snake_y);
-            isCollidingWithBody(slw);
-            popTailPosition();
+            slw = new SnakeLocation(snake_x + 1, snake_y);
         } else if (currentDirection == Direction.RIGHT && snake_x == GameState.WIDTH - 1) {
-            SnakeLocation slw = new SnakeLocation(0, snake_y);
-            isCollidingWithBody(slw);
-            popTailPosition();
+            slw = new SnakeLocation(0, snake_y);
         } else {
             // ignore
         }
+
+        if (slw != null) {
+            // 1. KRİTİK DEĞİŞİKLİK: Önce mevcut kuyruğu sil! 
+            // Çünkü kafa o kuyruğun yerine geçiyor olabilir.
+            popTailPosition();
+
+            // 2. KONTROL: Kuyruk silindikten sonra kafa gövdeye çarpıyor mu?
+            boolean isCrashed = checkSnakeAt(slw.getX(), slw.getY());
+
+            // 3. KAFAYI EKLE: Çarpmamışsa da çarpmışsa da kafayı çizdiriyoruz ki ekranda görelim
+            snakelocation.add(0, slw);
+
+            return isCrashed; // Çarpışma bilgisini dışarı (GameState'e) fırlat!
+        }
+        
+        return false;
     }
 
     public void popTailPosition(){
@@ -107,7 +105,9 @@ public class Snake {
         indexof() index numarasını bulmak için arka planda tekrardan döngüyü çalıştırır ve
         bu performans açısından yorucudur.
      */
+
     public boolean  checkSnakeAt(int x, int y) {
+
         for (int i = 0; i < snakelocation.size(); i++) {
             SnakeLocation snkloc = snakelocation.get(i);
 
@@ -116,18 +116,9 @@ public class Snake {
             }
         }
 
-        //döngüden çıktı ve hiçbir eşleşme yok -> yılana ait koordinat değil
-        return false;
-    }
+        
 
-    public boolean isCollidingWithBody(SnakeLocation slw) {
-        boolean is_eat_itself = checkSnakeAt(slw.getX(), slw.getY());
-        if (!is_eat_itself) {
-            snakelocation.add(0, slw);
-        } else {
-            System.out.println("GAME OVER");
-            return true;
-        }
+        //döngüden çıktı ve hiçbir eşleşme yok -> yılana ait koordinat değil
         return false;
     }
 
@@ -142,7 +133,6 @@ public class Snake {
     }
 
     public void setCurrentDirection(Direction newDirection) {
-    // TODO: Yılanın kendi içine doğru (tersine) dönmesini engelleme mantığını buraya kurabilirsin!
     this.currentDirection = newDirection;
     }
 }
